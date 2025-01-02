@@ -14,6 +14,7 @@ class MastodonClient implements Factory
 {
     use Concerns\Apps;
     use Concerns\Accounts;
+    use Concerns\Medias;
     use Concerns\Statuses;
     use Concerns\Streaming;
     use Macroable;
@@ -36,6 +37,12 @@ class MastodonClient implements Factory
         $response = Http::baseUrl($this->apiEndpoint())
             ->when(isset($this->client), fn (PendingRequest $client) => $client->setClient($this->client))
             ->when(filled($this->token), fn (PendingRequest $client) => $client->withToken($this->token))
+            ->when(isset($options['multipart']['file']), fn (PendingRequest $client) => $client->attach(
+                'file',
+                Psr7\Utils::tryFopen($options['multipart']['file'], 'r'), 
+                basename($options['multipart']['file']),
+                ['Content-Type' => mime_content_type($options['multipart']['file'])])
+            )
             ->send($method, $api, $options);
 
         $this->response = $response->toPsrResponse();
@@ -59,7 +66,11 @@ class MastodonClient implements Factory
         $options = [];
 
         if (! empty($params)) {
-            $options['form_params'] = $params;
+            if (! isset($params['file'])) {
+                $options['form_params'] = $params;
+            } else {
+                $options['multipart'] = $params;
+            }
         }
 
         return $this->call('POST', $api, $options);

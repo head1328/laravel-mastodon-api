@@ -41,4 +41,6 @@ interface Factory
      * @param  callable(string $event, string $data): void  $callback
      */
     public function streaming(string $url, callable $callback): void;
+
+    public function uploadMedia(string $file, array $options = []): array;
 }

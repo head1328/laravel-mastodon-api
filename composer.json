@@ -1,5 +1,5 @@
 {
-  "name": "head1328/laravel-mastodon-api",
+  "name": "revolution/laravel-mastodon-api",
   "description": "Mastodon API for Laravel",
   "keywords": [
     "mastodon",
@@ -39,5 +39,6 @@
         "Mastodon": "Revolution\\Mastodon\\Facades\\Mastodon"
       }
     }
-  }
+  },
+  "minimum-stability": "stable"
 }
